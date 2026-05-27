@@ -2,11 +2,11 @@
 const { pool } = require('../database');
 
 async function createIncidenciaSalida(req, res) {
-    //  console.log(req.body);
+      console.log(req.body);
     try{
-        const { nomina, auto, placa, motivo, acompanantesQTY, telefono, regresa, hora_salida, hora_regreso, lugar, descripcion, acompanante1, acompanante2, acompanante3, acompanante4, acompanante5 } = req.body;
+        const { nomina, auto, placa, motivo, acompanantesQTY, tel, regresa, hora_salida, hora_regreso, lugar, descripcion, acompanante1, acompanante2, acompanante3, acompanante4, acompanante5 } = req.body;
             const result = await pool.query("CALL rh.spi_solicitud_salida($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)", [
-                nomina, auto, placa, motivo, acompanantesQTY, telefono, regresa, hora_salida, hora_regreso, lugar, descripcion, acompanante1, acompanante2, acompanante3, acompanante4, acompanante5
+                nomina, auto, placa, motivo, acompanantesQTY, tel, regresa, hora_salida, hora_regreso, lugar, descripcion, acompanante1, acompanante2, acompanante3, acompanante4, acompanante5
             ]);
             res.status(200).json({
                 'message': 'Se levanto la incidencia'
@@ -14,14 +14,15 @@ async function createIncidenciaSalida(req, res) {
             })
 
     }catch (err){
-        console.err(err);
+        console.error(err);
     }
 }
 async function createIncidenciaAusencia(req, res){
     try{
-        const { nomina, motivo, vacacionesFlag, telefono, diasQTY, fecha_inicio, fecha_fin, descripcion } = req.body;
+        // console.log(req.body);
+        const { nomina, motivo, vacacionesFlag, telefono, diasQTY, fecha_ini, fecha_fin, descripcion } = req.body;
         const result = await pool.query("CALL rh.spi_solicitud_ausencia($1,$2,$3,$4,$5,$6,$7,$8)", [
-            nomina, motivo, vacacionesFlag, telefono, diasQTY, fecha_inicio, fecha_fin, descripcion
+            nomina, motivo, vacacionesFlag, telefono, diasQTY, fecha_ini, fecha_fin, descripcion
         ]);
         res.status(201).json({
             'message': 'La incidencia se creo correctamente'
@@ -44,6 +45,7 @@ async function getMotivos(req, res) {
 }
 //Obtener incidencias
 async function getAllSalidas(req, res) {
+    // console.log("cookie",req.cookies.token);
     const {userid} = req.query;
     try{
         const result = await pool.query("select * from rh.fn_gettablasalidas($1);", [
@@ -91,6 +93,7 @@ async function getSalidaByID(req, res) {
 }
 async function getAllIncidencias(req, res) {
     try{
+        // console.log(req.cookies.token);
         const result = await pool.query("select * from rh.fn_getincidencias();");
         res.status(200).json(result.rows);
     }catch(err){
@@ -111,9 +114,9 @@ async function getIncidenciaByid(req, res) {
 }
 //Actualizar incidencias
 async function updateSalida(req, res) {
-    const v_id = req.params.id;
-    const { v_user, v_autorizaflag, v_voboflag, v_goceflag, v_placas, v_horasalida, v_horaregreso, v_regresaflag, v_observaciones } = req.body;
     try{
+        const v_id = req.params.id;
+        const { v_user, v_autorizaflag, v_voboflag, v_goceflag, v_placas, v_horasalida, v_horaregreso, v_regresaflag, v_observaciones } = req.body;
         const result = await pool.query("CALL rh.spu_update_salida($1,$2,$3,$4,$5,$6,$7,$8,$9,$10);", [
             v_id, v_user, v_autorizaflag, v_voboflag, v_goceflag, v_placas, v_horasalida, v_horaregreso, v_regresaflag, v_observaciones
         ]);
@@ -126,8 +129,8 @@ async function updateSalida(req, res) {
     }
 }
 async function updateAusencia(req, res) {
-    console.log("Peticion", req.body);
-    console.log("Peticion", req.params.id);
+    // console.log("Peticion", req.body);
+    // console.log("Peticion", req.params.id);
     const v_id = req.params.id;
     const { v_usermodify, v_autorizaflag, v_voboflag, v_goceflag, v_vacacionesflag, v_fechaini, v_fechafin, v_diasqty,v_observaciones } = req.body;
     try{

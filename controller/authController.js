@@ -8,10 +8,10 @@ const secret_key = process.env.JWT_SECRET_KEY;
 // let userid = 0;
 // let rol = 0;
 const configCookie = {
-    maxAge: 1000 * 60 * 60 * 24,
+    maxAge: 15 * 60 * 1000,
     httpOnly: true,
-    SameSite: true
-    // secure: true
+    sameSite: 'lax',
+    secure: true
 };
 
 async function login(req, res) {
@@ -78,6 +78,34 @@ async function login(req, res) {
     }
 }
 
+async function updatePassword(req, res) {
+    try{
+        const { nomina, password } = req.query;
+
+        const new_hash = await bcrypt.hash(password, 10);
+
+        const response = await pool.query('CALL rh.spu_change_password($1,$2,null)', [
+            nomina, new_hash
+        ]);
+
+        if(response.rows[0].v_message == 1){
+            res.status(204).json({
+                'message': 'Se ha actualizado la contraseña',
+                'code': 'REST_PASSWORD_SUCCESS'
+            });
+        } else{
+            res.status(400).json({
+                'message': 'Se necesita autorizar el reset de la contraseña',
+                'code': 'REST_PASSWORD_FAIL'
+            })
+        }
+    }catch(err){
+        console.error(err);
+
+    }
+}
+
 module.exports = {
-    login
+    login,
+    updatePassword
 }

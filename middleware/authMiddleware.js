@@ -1,3 +1,9 @@
+const configCookie = {
+maxAge: 15 * 60 * 1000,
+httpOnly: true,
+sameSite: 'lax',
+secure: true
+};
 async function valiteSession(req, res, next) {
     const validateToken = req.cookies.token;
 
@@ -7,6 +13,7 @@ async function valiteSession(req, res, next) {
             "code": "WITHOUT_SESSION"
         })
     }else{
+        res.cookie('token', validateToken, configCookie);
         next();
     }
 }
