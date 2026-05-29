@@ -86,10 +86,63 @@ async function deleteUser(req, res) {
         console.error(err)
     }
 }
+async function getAllusers(req, res) {
+    try{
+        const response = await pool.query("select * from rh.fn_getallusers()");
+
+        res.status(200).json(response.rows);
+    }catch(err){
+        console.error(err);
+    }
+}
+
+//Info usuario
+async function getAllDepartamentos(req, res) {
+    try{
+        const response = await pool.query('select * from rh.fn_getdepartamentos()');
+
+        res.status(200).json(response.rows);
+    }catch(err){
+        console.error(err)
+    }
+}
+async function getAllPuestos(req, res) {
+    try{
+        const response = await pool.query('select * from rh.fn_getpuestos()');
+        res.status(200).json(response.rows);
+    }catch(err){
+        console.error(err)
+    }
+}
+async function getAllRoles(req, res) {
+    try{
+        const response = await pool.query('select * from rh.fn_getroles()');
+        res.status(200).json(response.rows);
+    }catch(err){
+        console.error(err)
+    }
+}
+async function getUserByID(req, res) {
+    try{
+        const nomina = req.params.nomina;
+        // console.log(nomina)
+        const result = await pool.query('select * from rh.fn_getuserbyid($1);',[
+            nomina
+        ]);
+        res.status(200).json(result.rows);
+    }catch(err){
+        console.error(err)
+    }
+}
 module.exports = {
     searchUser,
     getMenu,
     createUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    getAllusers,
+    getAllDepartamentos,
+    getAllPuestos,
+    getAllRoles,
+    getUserByID
 }
