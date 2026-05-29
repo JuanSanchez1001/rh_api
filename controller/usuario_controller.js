@@ -43,14 +43,15 @@ async function getMenu(req, res) {
 
 //Opciones de usuarios
 async function createUser(req, res) {
+    console.log(req.body);
     try{
-        const { v_nomina, v_nombre, v_apepaterno, v_apematerno, v_genero, v_correo, v_edad, v_jefedirecto, v_rolidf, v_departament, v_username, v_cargo } = req.body;
+        const { nomina, nombre, ape_paterno, ape_materno, genero, correo, edad, username, superid, departamento, puesto, rol } = req.body;
         const response = await pool.query('CALL rh.spi_create_user($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)', [
-            v_nomina, v_nombre, v_apepaterno, v_apematerno, v_genero, v_correo, v_edad, v_jefedirecto, v_rolidf, v_departament, v_username, v_cargo
+            nomina, nombre, ape_paterno, ape_materno, genero, correo, edad, username, superid, departamento, puesto, rol
         ]);
         res.status(201).json({
-            "message": "",
-            "code": ""
+            "message": "Usuario creado con exito",
+            "code": "USER_CREATED"
         });
     }catch(err){
         console.error(err)

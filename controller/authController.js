@@ -28,7 +28,7 @@ async function login(req, res) {
         switch (status) {
             case 0: //No existe el usuario
                 res.status(401).json({
-                    "error": "No se encontro al usario en la BD",
+                    "error": "Usuario o contraseña incorrecto",
                     "code": "USER_NOT_FOUND"
                 });
                 break;
@@ -39,8 +39,8 @@ async function login(req, res) {
                 const passwordMatch = await bcrypt.compare(password, result1.rows[0].hash);
                 if(!passwordMatch){
                     res.status(401).json({
-                        "error": "Credenciales invalidas",
-                        "code": "INVALID_CREDENTIALS"
+                        "error": "Usuario o contraseña incorrecto",
+                        "code": "USER_NOT_FOUN"
                     });
                 }else{
                     // userid = result1.rows[0].nomina;
@@ -79,22 +79,23 @@ async function login(req, res) {
 }
 
 async function updatePassword(req, res) {
+    //  console.log("Juanitoo",req.query)
     try{
-        const { nomina, password } = req.query;
+        const { nomina, newPassword } = req.query;
 
-        const new_hash = await bcrypt.hash(password, 10);
+        const new_hash = await bcrypt.hash(newPassword, 10);
 
         const response = await pool.query('CALL rh.spu_change_password($1,$2,null)', [
             nomina, new_hash
         ]);
-
+        // console.log(response.rows)
         if(response.rows[0].v_message == 1){
             res.status(204).json({
                 'message': 'Se ha actualizado la contraseña',
                 'code': 'REST_PASSWORD_SUCCESS'
             });
         } else{
-            res.status(400).json({
+            res.status(200).json({
                 'message': 'Se necesita autorizar el reset de la contraseña',
                 'code': 'REST_PASSWORD_FAIL'
             })
