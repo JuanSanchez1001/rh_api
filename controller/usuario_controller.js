@@ -59,15 +59,15 @@ async function createUser(req, res) {
 }
 async function updateUser(req, res) {
     try{
-        const v_nomina = req.params.id;
-        const { v_nombre, v_apepaterno, v_apematerno, v_genero, v_correo, v_edad, v_jefedirecto, v_rolidf, v_departament, v_username, v_cargo } = req.body;
+        const nomina = req.params.nomina;
+        const { nombre, ape_paterno, ape_materno, genero, correo, edad, username, superid, departamento, puesto, rol  } = req.body;
 
-        const response = await pool.query('CALL rh.spu_editeuser($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);', [
-            v_nombre, v_apepaterno, v_apematerno, v_genero, v_correo, v_edad, v_jefedirecto, v_rolidf, v_departament, v_username, v_cargo
+        const response = await pool.query('CALL rh.spu_update_user($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);', [
+            nomina, nombre, ape_paterno, ape_materno, genero, correo, edad, username, superid, departamento, puesto, rol
         ]);
         res.status(201).json({
-            "message": "",
-            "code": ""
+            "message": "Usuario actualizado con éxito",
+            "code": "USER_MODIFIED"
         });
     }catch(err){
         console.error(err)
@@ -75,13 +75,13 @@ async function updateUser(req, res) {
 }
 async function deleteUser(req, res) {
     try{
-        const userid = req.params.id;
+        const nomina = req.params.nomina;
         const response = await pool.query('CALL rh.spd_deleteuser($1)', [
-            userid
+            nomina
         ]);
         res.status(201).json({
-            "message": "",
-            "code": ""
+            "message": "Se elimino el usuario",
+            "code": "USER_DROPPED"
         });
     }catch(err){
         console.error(err)
@@ -135,6 +135,20 @@ async function getUserByID(req, res) {
         console.error(err)
     }
 }
+async function enableResetPassword(req, res) {
+    try{
+        const nomina = req.params.nomina;
+        const result = await pool.query('CALL rh.spu_enable_reset_pass($1)', [
+            nomina
+        ]);
+        res.status(201).json({
+            "message": "El usuario puede actualizar su contraseña",
+            "code": "USER_MODIFIED"
+        });
+    }catch(err){
+        console.error(err)
+    }
+}
 module.exports = {
     searchUser,
     getMenu,
@@ -145,5 +159,6 @@ module.exports = {
     getAllDepartamentos,
     getAllPuestos,
     getAllRoles,
-    getUserByID
+    getUserByID,
+    enableResetPassword
 }

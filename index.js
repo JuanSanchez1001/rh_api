@@ -4,6 +4,7 @@ const cookiesParser = require('cookie-parser');
 const userRoute = require('./route/user_route');
 const incidenciaRoute = require('./route/incidencia_route');
 const userAuth = require('./route/authRoute');
+const reporteRoute = require('./route/reportes_route');
 
 require('dotenv').config();
 
@@ -24,6 +25,7 @@ app.use(cors({ // Debe de cambiar a la ip donde se levante todote
 app.use('/rh', userAuth);
 app.use('/rh/usuarios', userRoute);
 app.use('/rh/incidencia', incidenciaRoute);
+app.use('/rh/reporte', reporteRoute);
 
 //Levantar el servidor
 const runServer = () => {

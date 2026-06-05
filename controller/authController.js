@@ -17,14 +17,14 @@ const configCookie = {
 async function login(req, res) {
     const { nomina, password } = req.body;
     let status;
-
+    // console.log(req.body);
     try{
         const result = await pool.query('CALL rh.sps_login($1, null);',[
             nomina
         ]);
         // console.log("Estatuseses", result.rows[0].v_estatus)
         status = result.rows[0].v_estatus;
-
+        // console.log(status);
         switch (status) {
             case 0: //No existe el usuario
                 res.status(401).json({
@@ -37,6 +37,7 @@ async function login(req, res) {
                     nomina
                 ]);
                 const passwordMatch = await bcrypt.compare(password, result1.rows[0].hash);
+                // console.log(passwordMatch);
                 if(!passwordMatch){
                     res.status(401).json({
                         "error": "Usuario o contraseña incorrecto",
@@ -88,16 +89,16 @@ async function updatePassword(req, res) {
         const response = await pool.query('CALL rh.spu_change_password($1,$2,null)', [
             nomina, new_hash
         ]);
-        // console.log(response.rows)
+        // console.log(response.rows[0].v_message)
         if(response.rows[0].v_message == 1){
-            res.status(204).json({
+            res.status(200).json({
                 'message': 'Se ha actualizado la contraseña',
-                'code': 'REST_PASSWORD_SUCCESS'
+                'code': 'RESET_PASSWORD_SUCCESS'
             });
         } else{
             res.status(200).json({
                 'message': 'Se necesita autorizar el reset de la contraseña',
-                'code': 'REST_PASSWORD_FAIL'
+                'code': 'RESET_PASSWORD_FAIL'
             })
         }
     }catch(err){

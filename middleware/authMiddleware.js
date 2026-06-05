@@ -37,7 +37,7 @@ async function validateLoginData(req, res, next) {
         next();
     }
 }
-async function validateChangePassword(req, params, next) {
+async function validateChangePassword(req, res, next) {
     const { nomina, newPassword } = req.query;
 
     if(!numberRegex.test(nomina)){
