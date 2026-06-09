@@ -1,2 +1,3 @@
 node_modules
 rh_schema.sql
+.env
