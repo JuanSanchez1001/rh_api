@@ -18,6 +18,7 @@ app.use(cookiesParser()); //set cookies
 
 app.use(cors({ // Debe de cambiar a la ip donde se levante todote
     origin: 'http://localhost:5173',
+    //origin: 'http://192.168.11:8001',
     credentials: true
 })); 
 

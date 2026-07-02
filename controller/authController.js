@@ -62,7 +62,7 @@ async function login(req, res) {
             case 2: //Se necesita cambiar contraseña
                 res.status(401).json({
                     "error": "Se necesita reestablecer contraseña",
-                    "code": "REST_PASSWORD"
+                    "code": "RESET_PASSWORD"
                 });
                 break;
         
@@ -106,8 +106,21 @@ async function updatePassword(req, res) {
 
     }
 }
+async function closeSession(req, res) {
+    try{
+        res.clearCookie('token');
+
+        res.status(200).json({
+            'message': 'Se ha cerrado su sesión',
+            'code': 'CLOSE_SESSION'
+        });
+    }catch(err){
+        console.error(err)
+    }
+}
 
 module.exports = {
     login,
-    updatePassword
+    updatePassword,
+    closeSession
 }

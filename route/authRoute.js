@@ -6,5 +6,6 @@ const autMiddleware = require('../middleware/authMiddleware')
 
 authRoute.post('/login', autMiddleware.validateLoginData, auth.login);
 authRoute.put('/reset_password', autMiddleware.validateChangePassword, auth.updatePassword);
+authRoute.post('/logout', auth.closeSession);
 
 module.exports = authRoute;

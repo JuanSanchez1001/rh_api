@@ -6,13 +6,25 @@ async function validateSalida(req, res, next) {
     //SYNTAX_ERROR
     // console.log(req.body);
     // const salidaFormulario = req.body;
-    const { nomina, acompanantesQTY, hora_salida, regresa, hora_regreso, lugar, acompanante1, acompanante2, acompanante3, acompanante4, acompanante5 } = req.body;
+    const { nomina,motivo, auto, acompanantesQTY, hora_salida, regresa, hora_regreso, lugar, acompanante1, acompanante2, acompanante3, acompanante4, acompanante5 } = req.body;
 
     let acompanantes = [acompanante1, acompanante2, acompanante3, acompanante4, acompanante5];
 
     if(!numberRegex.test(nomina)){
         return res.status(422).json({
             "error": "El campo nomina es incorrecto o esta vacio",
+            "code": "SYNTAX_ERROR"
+        });
+    }
+    if(motivo == ''){
+        return res.status(422).json({
+            "error": "El campo motivo es obligatorio",
+            "code": "SYNTAX_ERROR"
+        });
+    }
+    if(auto == ''){
+        return res.status(422).json({
+            "error": "El campo tipo de auto es obligatorio",
             "code": "SYNTAX_ERROR"
         });
     }

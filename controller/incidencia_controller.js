@@ -2,16 +2,32 @@
 const { pool } = require('../database');
 
 async function createIncidenciaSalida(req, res) {
-      console.log(req.body);
+    const { nomina, nombre,auto, placa, motivo, acompanantesQTY, tel, regresa, hora_salida, hora_regreso, lugar, descripcion, acompanante1, acompanante2, acompanante3, acompanante4, acompanante5 } = req.body;
     try{
-        const { nomina, auto, placa, motivo, acompanantesQTY, tel, regresa, hora_salida, hora_regreso, lugar, descripcion, acompanante1, acompanante2, acompanante3, acompanante4, acompanante5 } = req.body;
             const result = await pool.query("CALL rh.spi_solicitud_salida($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)", [
                 nomina, auto, placa, motivo, acompanantesQTY, tel, regresa, hora_salida, hora_regreso, lugar, descripcion, acompanante1, acompanante2, acompanante3, acompanante4, acompanante5
             ]);
+            //Envio de correo
+            const query1 = await pool.query("CALL rh.sps_getMailData($1,null)",[nomina]);
+            const listEmails = query1.rows[0].v_mails;
+            let body = JSON.stringify({
+                    to: listEmails,
+                    nomina: nomina,
+                    nombre: nombre,
+                    tipoIncidencia: "Salida de planta"
+            });
+            await fetch('http://localhost:3000/sendMail/crear_incidencia', { //Peticion para envio de correo
+                method: "POST",
+                body: body,
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
             res.status(200).json({
                 'message': 'Se levanto la incidencia'
                 // 'estado': '200'
-            })
+            });
 
     }catch (err){
         console.error(err);
@@ -20,16 +36,33 @@ async function createIncidenciaSalida(req, res) {
 async function createIncidenciaAusencia(req, res){
     try{
         // console.log(req.body);
-        const { nomina, motivo, vacacionesFlag, telefono, diasQTY, fecha_ini, fecha_fin, descripcion } = req.body;
+        const { nomina, nombre, motivo, vacacionesFlag, telefono, diasQTY, fecha_ini, fecha_fin, descripcion } = req.body;
         const result = await pool.query("CALL rh.spi_solicitud_ausencia($1,$2,$3,$4,$5,$6,$7,$8)", [
             nomina, motivo, vacacionesFlag, telefono, diasQTY, fecha_ini, fecha_fin, descripcion
         ]);
+        const query1 = await pool.query("CALL rh.sps_getMailData($1,null)",[nomina]);
+            const listEmails = query1.rows[0].v_mails;
+            // console.log("mails",listEmails);
+            let body = JSON.stringify({
+                    to: listEmails,
+                    nomina: nomina,
+                    nombre: nombre,
+                    tipoIncidencia: "Ausencia"
+            });
+            // console.log("body",body)
+            await fetch('http://localhost:3000/sendMail/crear_incidencia', {
+                method: "POST",
+                body: body,
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
         res.status(201).json({
             'message': 'La incidencia se creo correctamente'
             //id: result.rows[0].id -> y agregas un returningo como el de proc para regresar el id que se creo. Posibles mejoras 7u7
         })
     }catch(err){
-        console.err(err)
+        console.error(err)
     }
 }
 async function getMotivos(req, res) {
@@ -116,9 +149,9 @@ async function getIncidenciaByid(req, res) {
 async function updateSalida(req, res) {
     try{
         const v_id = req.params.id;
-        const { v_user, v_autorizaflag, v_voboflag, v_goceflag, v_placas, v_horasalida, v_horaregreso, v_regresaflag, v_observaciones } = req.body;
+        const { v_usermodify, v_autorizaflag, v_voboflag, v_goceflag, v_placas, v_horasalida, v_horaregreso, v_regresaflag, v_observaciones } = req.body;
         const result = await pool.query("CALL rh.spu_update_salida($1,$2,$3,$4,$5,$6,$7,$8,$9,$10);", [
-            v_id, v_user, v_autorizaflag, v_voboflag, v_goceflag, v_placas, v_horasalida, v_horaregreso, v_regresaflag, v_observaciones
+            v_id, v_usermodify, v_autorizaflag, v_voboflag, v_goceflag, v_placas, v_horasalida, v_horaregreso, v_regresaflag, v_observaciones
         ]);
         res.status(200).json({
             "message": "",
